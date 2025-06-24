@@ -10,9 +10,14 @@ func main() {
 	defer s.Close()
 
 	for {
-		err := s.HandleNext()
-		if err != nil {
-			panic(err)
-		}
+		c := s.NextConn()
+		go func() {
+			defer c.Close()
+
+			err := s.HandleNext(c)
+			if err != nil {
+				panic(err)
+			}
+		}()
 	}
 }

@@ -45,10 +45,7 @@ func (s *Server) NextConn() net.Conn {
 	return c
 }
 
-func (s *Server) HandleNext() error {
-	c := s.NextConn()
-	defer c.Close()
-
+func (s *Server) HandleNext(c net.Conn) error {
 	reader := bufio.NewReader(c)
 
 	for {
