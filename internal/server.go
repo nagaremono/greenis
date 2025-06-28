@@ -1,12 +1,11 @@
 package internal
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"os"
-	"strings"
 
 	"github.com/nagaremono/greenis/command"
 )
@@ -46,24 +45,33 @@ func (s *Server) NextConn() net.Conn {
 }
 
 func (s *Server) HandleNext(c net.Conn) error {
-	reader := bufio.NewReader(c)
-
 	for {
-		input, err := reader.ReadString('\n')
+		r, err := Parse(c)
 		if err != nil {
 			if err == io.EOF {
 				return nil
 			}
-			fmt.Println("error reading next input")
 			return err
 		}
-		// Start with hard coding the command
-		input = strings.TrimSpace(input)
-		if input != "PING" {
-			continue
+
+		arr, ok := r.(RespArray)
+		if !ok {
+			return errors.New("unhandled type")
+		}
+		var cmd string
+
+		switch v := arr[0].(type) {
+		case RespSString:
+			cmd = string(v)
+		case RespBString:
+			cmd = string(v)
+		default:
+			return errors.New("unhandled type")
 		}
 
-		out, err := s.r.Handle(input)
+		fmt.Printf("command received: %s, args: %v\n", cmd, arr[1:])
+
+		out, err := s.r.Handle(cmd)
 		if err != nil {
 			return err
 		}
