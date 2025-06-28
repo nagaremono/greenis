@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/nagaremono/greenis/internal"
 )
 
@@ -16,7 +19,8 @@ func main() {
 
 			err := s.HandleNext(c)
 			if err != nil {
-				panic(err)
+				fmt.Println(err)
+				os.Exit(1)
 			}
 		}()
 	}
