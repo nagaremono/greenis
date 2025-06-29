@@ -1,12 +1,10 @@
-package command
+package internal
 
-import (
-	"bytes"
-)
+import "bytes"
 
 type Context struct {
-	params []any
-	output *bytes.Buffer
+	Params []Resp
+	Output *bytes.Buffer
 }
 
 type CommandHandler interface {

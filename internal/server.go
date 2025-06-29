@@ -6,19 +6,15 @@ import (
 	"io"
 	"net"
 	"os"
-
-	"github.com/nagaremono/greenis/command"
 )
 
 type Server struct {
 	l net.Listener
-	r *command.CommandRouter
+	r *CommandRouter
 }
 
 func NewServer() *Server {
-	return &Server{
-		r: command.NewRouter(),
-	}
+	return &Server{}
 }
 
 func (s *Server) Listen() {
@@ -81,4 +77,8 @@ func (s *Server) HandleNext(c net.Conn) error {
 			return err
 		}
 	}
+}
+
+func (s *Server) RegisterRouter(r *CommandRouter) {
+	s.r = r
 }

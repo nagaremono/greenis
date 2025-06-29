@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/nagaremono/greenis/command"
 	"github.com/nagaremono/greenis/internal"
 )
 
 func main() {
 	s := internal.NewServer()
+	s.RegisterRouter(command.InitRouter())
 	s.Listen()
 	defer s.Close()
 
