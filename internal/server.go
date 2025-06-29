@@ -65,9 +65,12 @@ func (s *Server) HandleNext(c net.Conn) error {
 			return errors.New("unhandled type")
 		}
 
-		fmt.Printf("command received: %s, args: %v\n", cmd, arr[1:])
+		var args []Resp
+		if len(arr) > 1 {
+			args = arr[1:]
+		}
 
-		out, err := s.r.Handle(cmd)
+		out, err := s.r.Handle(cmd, args...)
 		if err != nil {
 			return err
 		}
