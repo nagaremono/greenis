@@ -7,6 +7,8 @@ func InitRouter() *internal.CommandRouter {
 
 	r.Register("PING", &PingCommand{})
 	r.Register("ECHO", &EchoCommand{})
+	r.Register("GET", &GetCommand{})
+	r.Register("SET", &SetCommand{})
 
 	return r
 }
