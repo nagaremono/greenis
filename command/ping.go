@@ -5,8 +5,10 @@ import "github.com/nagaremono/greenis/internal"
 type PingCommand struct{}
 
 func (h PingCommand) Handle(c *internal.Context) error {
-	output := "+PONG\r\n"
+	err := c.W.Write(internal.RespSString("PONG"))
+	if err != nil {
+		return err
+	}
 
-	c.Output.WriteString(output)
 	return nil
 }

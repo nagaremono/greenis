@@ -22,7 +22,11 @@ func (h SetCommand) Handle(c *internal.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to set value: %w", err)
 	}
-	c.Output.WriteString("$2\r\nOK\r\n")
+
+	err = c.W.Write(internal.RespBString("OK"))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

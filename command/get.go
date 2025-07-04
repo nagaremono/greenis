@@ -2,7 +2,6 @@ package command
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/nagaremono/greenis/internal"
 )
@@ -20,23 +19,25 @@ func (h GetCommand) Handle(c *internal.Context) error {
 
 	val, ok := internal.Store.Get(string(key))
 	if !ok {
-		c.Output.WriteString("$-1\r\n")
+		err := c.W.Write(internal.NullBString)
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 
-	var str string
-	switch v := val.(type) {
+	switch val.(type) {
 	case internal.RespBString:
-		str = string(v)
 	case internal.RespSString:
-		str = string(v)
 	default:
 		return errors.New("unsupported type")
 
 	}
 
-	str = "$" + strconv.Itoa(len(str)) + "\r\n" + str + "\r\n"
-	c.Output.WriteString(str)
+	err := c.W.Write(val)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

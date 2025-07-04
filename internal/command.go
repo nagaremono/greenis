@@ -1,10 +1,8 @@
 package internal
 
-import "bytes"
-
 type Context struct {
 	Params []Resp
-	Output *bytes.Buffer
+	W      *ResponseWriter
 }
 
 type CommandHandler interface {

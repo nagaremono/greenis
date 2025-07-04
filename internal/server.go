@@ -41,6 +41,9 @@ func (s *Server) NextConn() net.Conn {
 }
 
 func (s *Server) HandleNext(c net.Conn) error {
+	w := &ResponseWriter{
+		Dest: c,
+	}
 	for {
 		r, err := Parse(c)
 		if err != nil {
@@ -70,12 +73,7 @@ func (s *Server) HandleNext(c net.Conn) error {
 			args = arr[1:]
 		}
 
-		out, err := s.r.Handle(cmd, args...)
-		if err != nil {
-			return err
-		}
-
-		_, err = c.Write(out)
+		err = s.r.Handle(cmd, w, args...)
 		if err != nil {
 			return err
 		}

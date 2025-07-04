@@ -2,7 +2,6 @@ package command
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/nagaremono/greenis/internal"
 )
@@ -18,9 +17,10 @@ func (h EchoCommand) Handle(c *internal.Context) error {
 		return errors.New("invalid args type")
 	}
 
-	argLen := len(string(strArg))
-	str := "$" + strconv.Itoa(argLen) + "\r\n" + string(strArg) + "\r\n"
+	err := c.W.Write(strArg)
+	if err != nil {
+		return err
+	}
 
-	c.Output.WriteString(str)
 	return nil
 }

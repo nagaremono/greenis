@@ -8,14 +8,6 @@ import (
 	"strings"
 )
 
-type Resp any
-
-type (
-	RespSString string
-	RespBString string
-	RespArray   []Resp
-)
-
 type ParseRespError struct {
 	RespType string
 	Err      error
