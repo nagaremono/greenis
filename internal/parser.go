@@ -32,6 +32,8 @@ func Parse(r io.Reader) (Resp, error) {
 		return parseBulkString(reader)
 	case "*":
 		return parseArray(reader)
+	case ":":
+		return parseInt(reader)
 	}
 
 	return nil, &ParseRespError{Err: errors.New("unhandled first byte")}
@@ -90,4 +92,17 @@ func parseArray(r *bufio.Reader) (RespArray, error) {
 	}
 
 	return arr, nil
+}
+
+func parseInt(r *bufio.Reader) (RespInt, error) {
+	str, err := r.ReadString('\n')
+	if err != nil {
+		return 0, &ParseRespError{"int", err}
+	}
+	v, err := strconv.ParseInt(str, 10, 0)
+	if err != nil {
+		return 0, &ParseRespError{"int", err}
+	}
+
+	return RespInt(v), nil
 }

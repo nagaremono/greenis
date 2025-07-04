@@ -13,6 +13,7 @@ type (
 	RespBString     string
 	RespArray       []Resp
 	RespNullBString string
+	RespInt         int
 )
 
 var NullBString RespNullBString = ""
@@ -47,4 +48,9 @@ func (r RespArray) Encode() ([]byte, error) {
 
 func (r RespNullBString) Encode() ([]byte, error) {
 	return []byte("$-1\r\n"), nil
+}
+
+func (r RespInt) Encode() ([]byte, error) {
+	str := fmt.Sprintf(":%d\r\n", r)
+	return []byte(str), nil
 }
