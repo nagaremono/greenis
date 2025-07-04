@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/nagaremono/greenis/internal"
 )
@@ -10,7 +11,7 @@ import (
 type SetCommand struct{}
 
 func (h SetCommand) Handle(c *internal.Context) error {
-	if len(c.Params) != 2 {
+	if len(c.Params) < 2 {
 		return errors.New("invalid args count")
 	}
 	key, ok := c.Params[0].(internal.RespBString)
@@ -23,7 +24,27 @@ func (h SetCommand) Handle(c *internal.Context) error {
 		return fmt.Errorf("failed to set value: %w", err)
 	}
 
-	err = c.W.Write(internal.RespBString("OK"))
+	if len(c.Params) > 2 {
+		px, ok := c.Params[2].(internal.RespBString)
+		if !ok || px != "px" {
+			return fmt.Errorf("unknown args passed: %v", px)
+		}
+
+		dur, ok := c.Params[3].(internal.RespBString)
+		if !ok {
+			return fmt.Errorf("unknown parameter type passed: %v", dur)
+		}
+
+		expDur, err := time.ParseDuration(string(dur) + "ms")
+		if err != nil {
+			return fmt.Errorf("failure to parse expiry duration: %w", err)
+		}
+		time.AfterFunc(expDur, func() {
+			internal.Store.Delete(string(key))
+		})
+	}
+
+	err = c.W.Write(internal.RespSString("OK"))
 	if err != nil {
 		return err
 	}
