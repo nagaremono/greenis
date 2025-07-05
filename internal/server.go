@@ -24,6 +24,7 @@ func (s *Server) Listen() {
 		os.Exit(1)
 	}
 	s.l = l
+	fmt.Println("server listening on port 6379")
 }
 
 func (s *Server) Close() {
