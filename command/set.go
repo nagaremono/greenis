@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"greenis/internal"
+	"strconv"
 	"time"
 )
 
@@ -11,50 +12,96 @@ var CommandName string = "Set"
 type SetCommand struct{}
 
 func (h SetCommand) Handle(c *internal.Context) error {
-	if len(c.Params) < 2 {
-		err := c.W.Write(internal.NullBString)
-		if err != nil {
-			return &internal.InvalidArgsError{Command: CommandName, Args: c.Params, Err: err}
-		}
-		return &internal.InvalidArgsError{Command: CommandName, Args: c.Params}
-	}
-	key, ok := c.Params[0].(internal.RespBString)
-	if !ok {
-		err := c.W.Write(internal.NullBString)
-		if err != nil {
-			return &internal.InvalidArgsError{Command: CommandName, Args: c.Params, Err: err}
-		}
-		return &internal.InvalidArgsError{Command: CommandName, Args: c.Params}
-	}
+	err := validateArgs(c)
 
-	err := internal.Store.Set(string(key), c.Params[1])
+	err = internal.Store.Set(c.Params[0].String(), c.Params[1])
 	if err != nil {
 		return fmt.Errorf("failed to set value: %w", err)
 	}
 
 	if len(c.Params) > 2 {
-		px, ok := c.Params[2].(internal.RespBString)
-		if !ok || px != "px" {
-			return fmt.Errorf("unknown args passed: %v", px)
-		}
-
 		dur, ok := c.Params[3].(internal.RespBString)
 		if !ok {
-			return fmt.Errorf("unknown parameter type passed: %v", dur)
+			err := c.W.Write(internal.NullBString)
+			return &internal.InvalidArgsError{
+				Command: CommandName,
+				Args:    c.Params,
+				Err:     err,
+			}
 		}
 
-		expDur, err := time.ParseDuration(string(dur) + "ms")
+		expDur, err := time.ParseDuration(dur.String() + "ms")
 		if err != nil {
-			return fmt.Errorf("failure to parse expiry duration: %w", err)
+			err := c.W.Write(internal.NullBString)
+			return &internal.InvalidArgsError{
+				Command: CommandName,
+				Args:    c.Params,
+				Err:     err,
+			}
 		}
 		time.AfterFunc(expDur, func() {
-			internal.Store.Delete(string(key))
+			internal.Store.Delete(c.Params[0].String())
 		})
 	}
 
 	err = c.W.Write(internal.RespSString("OK"))
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func validateArgs(c *internal.Context) error {
+	if len(c.Params) < 2 {
+		err := c.W.Write(internal.NullBString)
+		return &internal.InvalidArgsError{
+			Command: CommandName,
+			Args:    c.Params,
+			Err:     err,
+		}
+	}
+
+	_, ok := c.Params[0].(internal.RespBString)
+	if !ok {
+		err := c.W.Write(internal.NullBString)
+		return &internal.InvalidArgsError{
+			Command: CommandName,
+			Args:    c.Params,
+			Err:     err,
+		}
+	}
+
+	if len(c.Params) > 2 {
+		px, ok := c.Params[2].(internal.RespBString)
+		if !ok || px != "px" {
+			err := c.W.Write(internal.NullBString)
+			return &internal.InvalidArgsError{
+				Command: CommandName,
+				Args:    c.Params,
+				Err:     err,
+			}
+		}
+
+		dur, ok := c.Params[3].(internal.RespBString)
+		if !ok {
+			err := c.W.Write(internal.NullBString)
+			return &internal.InvalidArgsError{
+				Command: CommandName,
+				Args:    c.Params,
+				Err:     err,
+			}
+		}
+
+		_, err := strconv.ParseInt(string(dur), 10, 0)
+		if err != nil {
+			err := c.W.Write(internal.NullBString)
+			return &internal.InvalidArgsError{
+				Command: CommandName,
+				Args:    c.Params,
+				Err:     err,
+			}
+		}
 	}
 
 	return nil
