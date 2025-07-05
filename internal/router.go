@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+	"strings"
 )
 
 type CommandRouter struct {
@@ -9,11 +10,13 @@ type CommandRouter struct {
 }
 
 func (c *CommandRouter) Register(name string, handler CommandHandler) {
-	c.table[name] = handler
+	cmd := strings.ToLower(name)
+	c.table[cmd] = handler
 }
 
 func (c *CommandRouter) Handle(name string, w *ResponseWriter, args ...Resp) error {
-	h, ok := c.table[name]
+	cmd := strings.ToLower(name)
+	h, ok := c.table[cmd]
 	if !ok {
 		return errors.New("handler not found")
 	}
