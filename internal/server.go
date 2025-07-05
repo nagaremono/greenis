@@ -76,7 +76,11 @@ func (s *Server) HandleNext(c net.Conn) error {
 
 		err = s.r.Handle(cmd, w, args...)
 		if err != nil {
-			return err
+			if errors.As(err, &ErrInvalidArgs) {
+				fmt.Println("invalid args")
+			} else {
+				return err
+			}
 		}
 	}
 }

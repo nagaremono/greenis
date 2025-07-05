@@ -1,22 +1,30 @@
 package command
 
 import (
-	"errors"
 	"fmt"
-	"time"
-
 	"greenis/internal"
+	"time"
 )
+
+var CommandName string = "Set"
 
 type SetCommand struct{}
 
 func (h SetCommand) Handle(c *internal.Context) error {
 	if len(c.Params) < 2 {
-		return errors.New("invalid args count")
+		err := c.W.Write(internal.NullBString)
+		if err != nil {
+			return &internal.InvalidArgsError{Command: CommandName, Args: c.Params, Err: err}
+		}
+		return &internal.InvalidArgsError{Command: CommandName, Args: c.Params}
 	}
 	key, ok := c.Params[0].(internal.RespBString)
 	if !ok {
-		return errors.New("invalid args type")
+		err := c.W.Write(internal.NullBString)
+		if err != nil {
+			return &internal.InvalidArgsError{Command: CommandName, Args: c.Params, Err: err}
+		}
+		return &internal.InvalidArgsError{Command: CommandName, Args: c.Params}
 	}
 
 	err := internal.Store.Set(string(key), c.Params[1])
