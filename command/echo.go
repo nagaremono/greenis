@@ -3,7 +3,7 @@ package command
 import (
 	"errors"
 
-	"github.com/nagaremono/greenis/internal"
+	"greenis/internal"
 )
 
 type EchoCommand struct{}

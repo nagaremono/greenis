@@ -1,6 +1,6 @@
 package command
 
-import "github.com/nagaremono/greenis/internal"
+import "greenis/internal"
 
 type PingCommand struct{}
 

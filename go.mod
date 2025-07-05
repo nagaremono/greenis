@@ -1,3 +1,3 @@
-module github.com/nagaremono/greenis
+module greenis
 
 go 1.24.0

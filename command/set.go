@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nagaremono/greenis/internal"
+	"greenis/internal"
 )
 
 type SetCommand struct{}

@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"greenis/command"
+	"greenis/internal"
 	"os"
-
-	"github.com/nagaremono/greenis/command"
-	"github.com/nagaremono/greenis/internal"
 )
 
 func main() {
