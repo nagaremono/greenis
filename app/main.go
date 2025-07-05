@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"greenis/command"
 	"greenis/internal"
-	"os"
 )
 
 func main() {
@@ -21,7 +20,6 @@ func main() {
 			err := s.HandleNext(c)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(1)
 			}
 		}()
 	}
