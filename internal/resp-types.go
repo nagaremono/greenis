@@ -16,6 +16,7 @@ type (
 	RespArray       []Resp
 	RespNullBString string
 	RespInt         int
+	RespBoolean     bool
 )
 
 var NullBString RespNullBString = ""
@@ -80,4 +81,23 @@ func (r RespInt) Encode() ([]byte, error) {
 
 func (r RespInt) String() string {
 	return strconv.Itoa(int(r))
+}
+
+func (r RespBoolean) Encode() ([]byte, error) {
+	encStr := ""
+	if r {
+		encStr = "t"
+	} else {
+		encStr = "f"
+	}
+
+	encStr = fmt.Sprintf("#%s\r\n", encStr)
+	return []byte(encStr), nil
+}
+
+func (r RespBoolean) String() string {
+	if r {
+		return "true"
+	}
+	return "false"
 }
