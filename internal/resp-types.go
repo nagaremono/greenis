@@ -17,6 +17,7 @@ type (
 	RespNullBString string
 	RespInt         int
 	RespBoolean     bool
+	RespMap         map[string]any
 )
 
 var NullBString RespNullBString = ""
@@ -100,4 +101,30 @@ func (r RespBoolean) String() string {
 		return "true"
 	}
 	return "false"
+}
+
+func (r RespMap) Encode() ([]byte, error) {
+	encStr := ""
+	count := 0
+
+	for k, v := range r {
+		val, ok := v.(Resp)
+		if !ok {
+			return nil, fmt.Errorf("unknown type of %s", val)
+		}
+		strVal, err := val.Encode()
+		if err != nil {
+			return nil, fmt.Errorf("unsupported to encode %s, err: %w", strVal, err)
+		}
+
+		encStr += k + string(strVal)
+		count = count + 1
+	}
+
+	encStr = fmt.Sprintf("%%%d\r\n%s", count, encStr)
+	return []byte(encStr), nil
+}
+
+func (r RespMap) String() string {
+	return fmt.Sprintf("%#v", r)
 }
