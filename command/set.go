@@ -14,6 +14,15 @@ type SetCommand struct{}
 func (h SetCommand) Handle(c *internal.Context) error {
 	err := validateArgs(c)
 
+	if len(c.Params) < 2 {
+		err := c.W.Write(internal.NullBString)
+		return &internal.InvalidArgsError{
+			Command: CommandName,
+			Args:    c.Params,
+			Err:     err,
+		}
+	}
+
 	err = internal.Store.Set(c.Params[0].String(), c.Params[1])
 	if err != nil {
 		return fmt.Errorf("failed to set value: %w", err)
