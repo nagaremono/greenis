@@ -13,14 +13,8 @@ type SetCommand struct{}
 
 func (h SetCommand) Handle(c *internal.Context) error {
 	err := validateArgs(c)
-
-	if len(c.Params) < 2 {
-		err := c.W.Write(internal.NullBString)
-		return &internal.InvalidArgsError{
-			Command: CommandName,
-			Args:    c.Params,
-			Err:     err,
-		}
+	if err != nil {
+		return err
 	}
 
 	err = internal.Store.Set(c.Params[0].String(), c.Params[1])
