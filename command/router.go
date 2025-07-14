@@ -9,6 +9,7 @@ func InitRouter() *internal.CommandRouter {
 	r.Register("ECHO", &EchoCommand{})
 	r.Register("GET", &GetCommand{})
 	r.Register("SET", &SetCommand{})
+	r.Register("CONFIG", &ConfigCommand{})
 
 	return r
 }
