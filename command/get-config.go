@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"greenis/internal"
+	"strings"
 )
 
 var getConfigCmd = &GetConfigCommand{}
@@ -17,7 +18,7 @@ func (h GetConfigCommand) Handle(c *internal.Context) error {
 	if !ok {
 		return errors.New("invalid args type")
 	}
-	if string(keyword) != "get" {
+	if strings.ToLower(string(keyword)) != "get" {
 		return errors.New("unknown command")
 	}
 	key, ok := c.Params[1].(internal.RespBString)
